@@ -1,8 +1,8 @@
 # PostCSS URL Append
 
-[PostCSS] plugin to append a raw block of CSS from a URL.
+**This plugin has not been published to the registry yet.**
 
-[PostCSS]: https://github.com/postcss/postcss
+[PostCSS](https://github.com/postcss/postcss) plugin to append a raw block of CSS from a URL.
 
 ```css
 .foo {}

@@ -3,7 +3,13 @@ npm-debug.log
 package-lock.json
 yarn.lock
 
-*.test.js
-.travis.yml
-.editorconfig
+.github/
+.vscode/
 coverage/
+tests/
+.eslintignore
+.eslintrc.js
+.nvmrc
+jest.config.js
+tsconfig.json
+.editorconfig

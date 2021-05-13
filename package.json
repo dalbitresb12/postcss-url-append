@@ -5,9 +5,7 @@
   "keywords": [
     "postcss",
     "css",
-    "postcss-plugin",
-    "append",
-    "url"
+    "postcss-plugin"
   ],
   "scripts": {
     "build": "tsc",
