@@ -26,6 +26,10 @@ const preprocessUrls = (name: string, input?: string[]): string[] => {
     return input;
   }
 
+  if (input.some(url => typeof url !== "string")) {
+    throw new Error(`Expected an array of strings in opts.${name}.`);
+  }
+
   // Prepend every URL with the protocol if needed
   const withHttp = input.map(url => prependHttp(url));
   // Prevent build from running if any URL is invalid
