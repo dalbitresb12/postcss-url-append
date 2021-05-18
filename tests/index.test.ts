@@ -2,7 +2,8 @@ import fetch from 'node-fetch';
 import postcss from 'postcss';
 import { mocked } from 'ts-jest/utils';
 import { createFetchMock } from './utils';
-import postcssUrlAppend, { Options } from '../src';
+import postcssUrlAppend from '../src';
+import type { Options } from '../src/typings';
 
 // Mock the node-fetch module
 jest.mock('node-fetch');
@@ -20,9 +21,21 @@ const run = async (input: string, output: string, opts: Options) => {
   expect(result.warnings()).toHaveLength(0);
 };
 
-describe('PostCSS URL Append', () => {
-  beforeAll(() => {
+const files = {
+  base: {
+    id: 'base',
+    url: 'https://example.com/base.css',
+  },
+  theme: {
+    id: 'theme',
+    url: 'https://example.com/theme.css',
+  },
+};
+
+describe('postcss-url-append', () => {
+  beforeEach(() => {
     const mock = createFetchMock();
+    mockedFetch.mockReset();
     mockedFetch.mockImplementation(mock);
   });
 
@@ -35,24 +48,35 @@ describe('PostCSS URL Append', () => {
   });
 
   it('must append the result from the url', async () => {
-    const opts = {
-      urls: ['https://example.com/base.css'],
-    };
-    await run('a {}', 'a {}\nfoo {}', opts);
+    const opts: Options = { urls: [files.base] };
+    await run('a {}\n@append base;', 'a {}\nfoo {}', opts);
+  });
+
+  it('must ignore @append rules without definition', async () => {
+    await run('@append base;\na {}', 'a {}', {});
+  });
+
+  it('must replace all the @append rules', async () => {
+    const opts: Options = { urls: [files.base] };
+    await run('@append base;\na {}\n@append base;', 'foo {}\na {}\nfoo {}', opts);
+  });
+
+  it('must use the saved contents and not refetch', async () => {
+    mockedFetch
+      .mockImplementationOnce(createFetchMock({ body: 'foo {}' }))
+      .mockImplementationOnce(createFetchMock({ body: 'bar {}' }));
+
+    const opts: Options = { urls: [files.base] };
+    await run('@append base;\na {}\n@append base;', 'foo {}\na {}\nfoo {}', opts);
   });
 
   it('must append all the files passed', async () => {
     mockedFetch
-      .mockImplementationOnce(createFetchMock())
+      .mockImplementationOnce(createFetchMock({ body: 'foo {}' }))
       .mockImplementationOnce(createFetchMock({ body: 'bar {}' }));
 
-    const opts = {
-      urls: [
-        'https://example.com/base.css',
-        'https://example.com/theme.css',
-      ]
-    };
-    await run('a {}', 'a {}\nfoo {}\nbar {}', opts);
+    const opts: Options = { urls: [files.base, files.theme] };
+    await run('@append base;\na {}\n@append theme;', 'foo {}\na {}\nbar {}', opts);
   });
 
   describe('Errors', () => {
@@ -60,7 +84,7 @@ describe('PostCSS URL Append', () => {
       // @ts-expect-error: This is a test and we expect it to fail
       expect(() => createProcessor({ urls: 1 })).toThrow({
         name: 'Error',
-        message: 'Expected an array, received number in opts.urls.',
+        message: `Expected an array, received number in 'opts.urls'.`,
       });
     });
   
@@ -68,7 +92,7 @@ describe('PostCSS URL Append', () => {
       // @ts-expect-error: This is a test and we expect it to fail
       expect(() => createProcessor({ urls: [1] })).toThrow({
         name: 'Error',
-        message: 'Expected an array of strings in opts.urls.',
+        message: `An invalid value was passed to 'opts.urls'. Please, check your configuration.`,
       });
     });
 
@@ -79,7 +103,7 @@ describe('PostCSS URL Append', () => {
       ];
 
       test.each(invalidUrls)(`%s`, (url) => {
-        expect(() => createProcessor({ urls: [url] })).toThrow('is not a valid URL.');
+        expect(() => createProcessor({ urls: [{ id: 'test', url }] })).toThrow('is not a valid URL.');
       });
     });
   });
