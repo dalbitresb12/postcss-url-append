@@ -1,6 +1,6 @@
 {
   "name": "postcss-url-append",
-  "version": "0.1.0",
+  "version": "0.0.0",
   "description": "PostCSS plugin to append a raw block of CSS from a URL.",
   "keywords": [
     "postcss",
@@ -14,7 +14,10 @@
     "lint": "eslint . && tsc --noEmit",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:full": "jest --coverage"
+    "test:full": "jest --coverage",
+    "preversion": "yarn lint",
+    "version": "yarn build",
+    "release": "np"
   },
   "author": {
     "name": "Diego Albitres",
@@ -48,6 +51,7 @@
     "eslint-plugin-jest": "^24.2.1",
     "jest": "^26.6.3",
     "lint-staged": "^10.5.4",
+    "np": "^7.5.0",
     "postcss": "^8.2.15",
     "simple-git-hooks": "^2.0.2",
     "ts-jest": "^26.5.6",

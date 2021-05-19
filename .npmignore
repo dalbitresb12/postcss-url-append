@@ -7,9 +7,10 @@ yarn.lock
 .vscode/
 coverage/
 tests/
+.editorconfig
 .eslintignore
 .eslintrc.js
 .nvmrc
 jest.config.js
 tsconfig.json
-.editorconfig
+yarn.lock
