@@ -1,6 +1,6 @@
 {
   "name": "postcss-url-append",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "PostCSS plugin to append a raw block of CSS from a URL.",
   "keywords": [
     "postcss",
